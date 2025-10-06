@@ -35,6 +35,26 @@ AppData/AppStream metadata for software centers.
 
 ## Build Instructions
 
+### Prerequisites
+Doudou requires `libmpv` for media playback. Install it on your host system:
+
+**Debian/Ubuntu:**
+```bash
+sudo apt install libmpv-dev
+```
+
+**Fedora:**
+```bash
+sudo dnf install mpv-libs-devel
+```
+
+**Arch:**
+```bash
+sudo pacman -S mpv
+```
+
+The Flatpak uses `--filesystem=host:ro` to access the system's libmpv library.
+
 ### Build the Flatpak
 ```bash
 flatpak-builder --force-clean build-dir gitlab.openlyst.doudou.yml
