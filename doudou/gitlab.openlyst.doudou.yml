@@ -5,70 +5,91 @@ sdk: org.freedesktop.Sdk
 command: doudou
 
 finish-args:
-  # X11 + XShm access
   - --share=ipc
   - --socket=x11
-  # Wayland access
   - --socket=wayland
-  # Audio output
   - --socket=pulseaudio
-  # Network access (for streaming)
   - --share=network
-  # OpenGL access
   - --device=dri
-  # Access to home directory for media files
   - --filesystem=home
-  # Access to removable media
   - --filesystem=/media
   - --filesystem=/run/media
 
 modules:
-  # Create directory for ffmpeg extension
+  # ----------------------------------------------------------------------------
+  # libplacebo (required by mpv 0.40.0) - fetch with submodules so 3rdparty/glad is present
+  # ----------------------------------------------------------------------------
+  - name: libplacebo
+    buildsystem: meson
+    sources:
+      - type: git
+        url: https://github.com/haasn/libplacebo.git
+        tag: v6.338.2
+        # flatpak-builder might warn about 'submodules', but in practice fetching them is necessary:
+        submodules: true
+    config-opts:
+      - -Ddefault_library=shared
+
+  # ----------------------------------------------------------------------------
+  # libass (subtitle renderer) - build with autotools (release uses autoconf)
+  # ----------------------------------------------------------------------------
+  - name: libass
+    buildsystem: autotools
+    sources:
+      - type: git
+        url: https://github.com/libass/libass.git
+        tag: 0.17.1
+    # autotools module will run autogen/configure automatically; no meson flags here
+
+  # ----------------------------------------------------------------------------
+  # libmpv (mpv core library used by your app)
+  # ----------------------------------------------------------------------------
+  - name: libmpv
+    buildsystem: meson
+    sources:
+      - type: archive
+        url: https://github.com/mpv-player/mpv/archive/refs/tags/v0.40.0.zip
+        sha256: 00fbe63728f7d06b351b2ab532db77ccdba0a49d45f88c456e7f54207457ef59
+    config-opts:
+      - -Dlibmpv=true
+      # DO NOT pass -Dlibass or -Dlibass=false — mpv's meson autodetects libass,
+      # and passing invalid -D keys causes the "Unknown options" error.
+
+  # ----------------------------------------------------------------------------
+  # ffmpeg-extension placeholder directory (keeps your previous manifest intent)
+  # ----------------------------------------------------------------------------
   - name: ffmpeg-extension
     buildsystem: simple
     build-commands:
       - mkdir -p /app/lib/ffmpeg
 
-  # Main doudou application
+  # ----------------------------------------------------------------------------
+  # doudou app (your main prebuilt bundle)
+  # ----------------------------------------------------------------------------
   - name: doudou
     buildsystem: simple
     build-commands:
-      # Extract the downloaded zip
       - unzip -q doudou-release.zip
-      # Install the application files
       - mkdir -p /app/bin
       - mkdir -p /app/lib/doudou
       - cp -r build/linux/x64/release/bundle/* /app/lib/doudou/
-      # Create wrapper script to launch the app
       - install -Dm755 doudou /app/bin/doudou
-      # Install desktop file
       - install -Dm644 gitlab.openlyst.doudou.desktop /app/share/applications/gitlab.openlyst.doudou.desktop
-      # Install icon
       - install -Dm644 gitlab.openlyst.doudou-64.png /app/share/icons/hicolor/64x64/apps/gitlab.openlyst.doudou.png
-      # Install metainfo
       - install -Dm644 gitlab.openlyst.doudou.metainfo.xml /app/share/metainfo/gitlab.openlyst.doudou.metainfo.xml
     sources:
-      # Download the pre-built release
       - type: file
         url: https://gitlab.com/Openlyst/doudou/-/jobs/artifacts/c392f5d1da3d5636b945b6d14637d80d1217476c/download?job=build_release_linux
         sha256: 5ce7e80f8fd7d7a060ba445e78ebe037261abe80a60e0413f4f3cc411fbeff14
         dest-filename: doudou-release.zip
-      
-      # Wrapper script to launch the application
       - type: script
         dest-filename: doudou
         commands:
           - exec /app/lib/doudou/doudou "$@"
-      
-      # Desktop file
       - type: file
         path: gitlab.openlyst.doudou.desktop
-      
-      # Icon
       - type: file
         path: gitlab.openlyst.doudou-64.png
-      
-      # Metainfo
       - type: file
         path: gitlab.openlyst.doudou.metainfo.xml
 
