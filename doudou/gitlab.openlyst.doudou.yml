@@ -74,7 +74,7 @@ modules:
     sources:
       - type: archive
         url: https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.24.5-stable.tar.xz
-        sha256: d7790f25e8876e7c1fde128e0d3f7d3c8e3a3e4e4c9a8f3d8c3e8d6f8c6e5f4d
+        sha256: a7c82f551a9eae018e078f6bb186171e5a77920d35a3d75a61d9a593d0a9e4ae
         only-arches:
           - x86_64
   
