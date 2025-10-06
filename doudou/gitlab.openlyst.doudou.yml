@@ -64,13 +64,29 @@ modules:
       - /include
       - /lib/pkgconfig
       - /share/man
+
+  - name: flutter
+    buildsystem: simple
+    build-commands:
+      - mkdir -p /app/flutter
+      - tar -xf flutter-*.tar.xz -C /app/flutter --strip-components=1
+      - /app/flutter/bin/flutter precache --linux
+    sources:
+      - type: archive
+        url: https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.24.5-stable.tar.xz
+        sha256: d7790f25e8876e7c1fde128e0d3f7d3c8e3a3e4e4c9a8f3d8c3e8d6f8c6e5f4d
+        only-arches:
+          - x86_64
   
   - name: doudou
     buildsystem: simple
+    build-options:
+      env:
+        - PATH=/app/flutter/bin:/usr/bin
     build-commands:
-      - install -Dm755 bin/doudou /app/bin/doudou
-      - cp -r bin/data /app/bin/
-      - cp -r bin/lib /app/bin/
+      - flutter pub get
+      - flutter build linux --release
+      - cp -r build/linux/x64/release/bundle/* /app/
       - install -Dm644 gitlab.openlyst.doudou.appdata.xml /app/share/metainfo/gitlab.openlyst.doudou.appdata.xml
       - install -Dm644 gitlab.openlyst.doudou.desktop /app/share/applications/gitlab.openlyst.doudou.desktop
       - install -Dm644 gitlab.openlyst.doudou.png /app/share/icons/hicolor/128x128/apps/gitlab.openlyst.doudou.png
