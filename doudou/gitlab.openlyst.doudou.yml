@@ -65,24 +65,24 @@ modules:
       - /lib/pkgconfig
       - /share/man
 
-  - name: flutter
+  - name: flutter-sdk
     buildsystem: simple
     build-commands:
       - mkdir -p /app/flutter
-      - tar -xf flutter-*.tar.xz -C /app/flutter --strip-components=1
+      - cp -r . /app/flutter/
+      - /app/flutter/bin/flutter doctor
       - /app/flutter/bin/flutter precache --linux
     sources:
-      - type: archive
-        url: https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.24.5-stable.tar.xz
-        sha256: a7c82f551a9eae018e078f6bb186171e5a77920d35a3d75a61d9a593d0a9e4ae
-        only-arches:
-          - x86_64
+      - type: git
+        url: https://github.com/flutter/flutter.git
+        tag: 3.24.5
+        commit: b0850beeb25f6d5b10426284f506557f66181b36
   
   - name: doudou
     buildsystem: simple
     build-options:
       env:
-        - PATH=/app/flutter/bin:/usr/bin
+        PATH: /app/flutter/bin:/usr/bin
     build-commands:
       - flutter pub get
       - flutter build linux --release
