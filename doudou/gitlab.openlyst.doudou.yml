@@ -28,7 +28,7 @@ modules:
         # NOTE: Replace the sha256 below with the checksum of the downloaded artifact.
         sha256: a1a8705cf12ed43e8d9868aa7b5e9d330932fca7443c8dd5a9264dcf9ed181e5
       - type: dir
-        path: ../counter_app
+        path: ../doudou
       # - type: git
       #   url: https://github.com/Merrit/flutter_flatpak_example.git
       #   branch: main
