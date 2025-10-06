@@ -34,7 +34,7 @@ modules:
         sha256: 86d9ef40b6058732f67b46d0bbda24a074fae860b3eaae05bab3145041303066
       - type: file
         url: https://waf.io/waf-2.0.27
-        sha256: 2bbd7c55b5fa45e9f4c23e2f8c5c0cd62fc8b04c9d8c36c3c1f4023c1e1e8128
+        sha256: fe10e266c05063752d098787a7b934cd0d61092c8b072884f8a679c1c596dd6a
         dest-filename: waf
 
   - name: doudou
