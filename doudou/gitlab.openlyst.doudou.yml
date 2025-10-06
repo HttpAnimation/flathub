@@ -1,171 +1,36 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/flatpak/flatpak-builder/main/data/flatpak-manifest.schema.json
+
+---
 app-id: gitlab.openlyst.doudou
 runtime: org.freedesktop.Platform
-runtime-version: '24.08'
+runtime-version: "22.08"
 sdk: org.freedesktop.Sdk
 command: doudou
 separate-locales: false
-
 finish-args:
   - --share=ipc
-  - --socket=x11
+  - --socket=fallback-x11
   - --socket=wayland
-  - --share=network
-  - --socket=pulseaudio
   - --device=dri
-  - --filesystem=xdg-config/doudou:create
-  - --filesystem=xdg-data/doudou:create
-  - --socket=session-bus
-  - --own-name=gitlab.openlyst.doudou
-  - --env=FLUTTER_VERSION=3.24.0
-  - --env=DART_SDK=/app/flutter/bin/cache/dart-sdk
-
+  - --socket=pulseaudio
+  - --share=network
 modules:
-  # Dependencies
-  - name: libsecret
-    buildsystem: meson
-    config-opts:
-      - -Dmanpage=false
-      - -Dvapi=false
-      - -Dgtk_doc=false
-    sources:
-      - type: archive
-        url: https://download.gnome.org/sources/libsecret/0.21/libsecret-0.21.4.tar.xz
-        sha256: 163d08d783be6d4ab9a979ceb5a4fecbc1d9660d3c34168c581301cd53912b20
-    cleanup:
-      - /bin
-      - /include
-      - /lib/pkgconfig
-      - /share/gir-1.0
-      - /share/man
-
-  - name: libjsoncpp
-    buildsystem: cmake-ninja
-    builddir: true
-    config-opts:
-      - -DCMAKE_BUILD_TYPE=Release
-      - -DBUILD_SHARED_LIBS=ON
-      - -DJSONCPP_WITH_TESTS=OFF
-    sources:
-      - type: archive
-        url: https://github.com/open-source-parsers/jsoncpp/archive/1.9.5.tar.gz
-        sha256: f409856e5920c18d0c2fb85276e24ee607d2a09b5e7d5f0a371368903c275da2
-
-  - name: flutter
-    buildsystem: simple
-    build-commands:
-      - cp -r flutter /app/
-      - rm -rf /app/flutter/bin/cache
-      - /app/flutter/bin/flutter --version
-      - /app/flutter/bin/flutter config --no-analytics
-      - /app/flutter/bin/flutter config --no-cli-animations
-      - /app/flutter/bin/flutter config --enable-linux-desktop
-    sources:
-      - type: archive
-        url: https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.24.0-stable.tar.xz
-        sha256: d52a5d12f17d8bcf868d1ccc01fe0f7ffb05b53d9628aa21b07a18f9d33621f2
-        dest: flutter
-        strip-components: 0
-
+  # FlutterApp
   - name: doudou
     buildsystem: simple
-    build-options:
-      env:
-        PATH: /app/flutter/bin:/usr/bin:/bin
-        FLUTTER_ROOT: /app/flutter
-        PUB_CACHE: flatpak-pub-cache
+    only-arches:
+      - x86_64
     build-commands:
-      - rm -rf build
-      - flutter config --no-analytics
-      - flutter config --enable-linux-desktop
-      - flutter clean
-      - flutter pub get
-      - flutter build linux --release --verbose
-      - cp -r build/linux/*/release/bundle/* /app/
-      - install -Dm644 linux/gitlab.openlyst.doudou.desktop /app/share/applications/gitlab.openlyst.doudou.desktop
-      - |
-        for size in 16 32 48 64 128 256 512; do
-          install -Dm644 linux/icons/${size}x${size}.png /app/share/icons/hicolor/${size}x${size}/apps/gitlab.openlyst.doudou.png 2>/dev/null || \
-          install -Dm644 assets/icon/icon.png /app/share/icons/hicolor/${size}x${size}/apps/gitlab.openlyst.doudou.png 2>/dev/null || \
-          true
-        done
-      - install -Dm644 linux/gitlab.openlyst.doudou.metainfo.xml /app/share/metainfo/gitlab.openlyst.doudou.metainfo.xml 2>/dev/null || true
-      - |
-        cat > /app/bin/doudou <<'EOF'
-        #!/bin/sh
-        cd /app/data
-        exec /app/data/doudou "$@"
-        EOF
-      - chmod +x /app/bin/doudou
+      - "./build-flatpak.sh"
     sources:
-      - type: git
-        url: https://gitlab.com/Openlyst/doudou.git
-        tag: 5.0.0
-
-  - name: desktop-integration
-    buildsystem: simple
-    build-commands:
-      - |
-        if [ ! -f /app/share/applications/gitlab.openlyst.doudou.desktop ]; then
-          cat > gitlab.openlyst.doudou.desktop <<EOF
-        [Desktop Entry]
-        Version=1.0
-        Type=Application
-        Name=Doudou
-        Comment=White noise and baby sleep sounds app
-        Icon=gitlab.openlyst.doudou
-        Exec=doudou %U
-        Categories=AudioVideo;Audio;Education;
-        StartupNotify=true
-        Terminal=false
-        EOF
-          install -Dm644 gitlab.openlyst.doudou.desktop /app/share/applications/gitlab.openlyst.doudou.desktop
-        fi
-      - |
-        if [ ! -f /app/share/metainfo/gitlab.openlyst.doudou.metainfo.xml ]; then
-          cat > gitlab.openlyst.doudou.metainfo.xml <<EOF
-        <?xml version="1.0" encoding="UTF-8"?>
-        <component type="desktop-application">
-          <id>gitlab.openlyst.doudou</id>
-          <name>Doudou</name>
-          <summary>White noise and baby sleep sounds</summary>
-          <description>
-            <p>Doudou is a white noise application designed to help babies sleep better. 
-            It provides various soothing sounds and white noise options to create a 
-            calming environment for sleep.</p>
-          </description>
-          <metadata_license>CC0-1.0</metadata_license>
-          <project_license>MIT</project_license>
-          <developer_name>Openlyst</developer_name>
-          <url type="homepage">https://gitlab.com/Openlyst/doudou</url>
-          <url type="bugtracker">https://gitlab.com/Openlyst/doudou/-/issues</url>
-          <launchable type="desktop-id">gitlab.openlyst.doudou.desktop</launchable>
-          <releases>
-            <release version="5.0.0" date="2024-01-01"/>
-          </releases>
-          <content_rating type="oars-1.1">
-            <content_attribute id="violence-cartoon">none</content_attribute>
-            <content_attribute id="violence-fantasy">none</content_attribute>
-            <content_attribute id="violence-realistic">none</content_attribute>
-            <content_attribute id="violence-bloodshed">none</content_attribute>
-            <content_attribute id="violence-sexual">none</content_attribute>
-            <content_attribute id="drugs-alcohol">none</content_attribute>
-            <content_attribute id="drugs-narcotics">none</content_attribute>
-            <content_attribute id="drugs-tobacco">none</content_attribute>
-            <content_attribute id="sex-nudity">none</content_attribute>
-            <content_attribute id="sex-themes">none</content_attribute>
-            <content_attribute id="language-profanity">none</content_attribute>
-            <content_attribute id="language-humor">none</content_attribute>
-            <content_attribute id="language-discrimination">none</content_attribute>
-            <content_attribute id="social-chat">none</content_attribute>
-            <content_attribute id="social-info">none</content_attribute>
-            <content_attribute id="social-audio">none</content_attribute>
-            <content_attribute id="social-location">none</content_attribute>
-            <content_attribute id="social-contacts">none</content_attribute>
-            <content_attribute id="money-purchasing">none</content_attribute>
-            <content_attribute id="money-gambling">none</content_attribute>
-          </content_rating>
-        </component>
-        EOF
-          install -Dm644 gitlab.openlyst.doudou.metainfo.xml /app/share/metainfo/gitlab.openlyst.doudou.metainfo.xml
-        fi
-    sources: []
+      - type: file
+        url: https://gitlab.com/Openlyst/doudou/-/jobs/artifacts/c392f5d1da3d5636b945b6d14637d80d1217476c/download?job=build_release_linux
+        # NOTE: Replace the sha256 below with the checksum of the downloaded artifact.
+        sha256: REPLACE_WITH_SHA256
+      - type: dir
+        path: ../counter_app
+      # - type: git
+      #   url: https://github.com/Merrit/flutter_flatpak_example.git
+      #   branch: main
+      - type: file
+        path: build-flatpak.sh
