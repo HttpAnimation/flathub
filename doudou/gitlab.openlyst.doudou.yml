@@ -20,16 +20,6 @@ finish-args:
   - --env=DART_SDK=/app/flutter/bin/cache/dart-sdk
 
 modules:
-  # Git LFS support
-  - name: git-lfs
-    buildsystem: simple
-    build-commands:
-      - install -Dm755 git-lfs /app/bin/git-lfs
-    sources:
-      - type: archive
-        url: https://github.com/git-lfs/git-lfs/releases/download/v3.5.1/git-lfs-linux-amd64-v3.5.1.tar.gz
-        sha256: 6f28eb19faa7a968882dca190d92adc82493378b933958d67ceaeb9ebe4d731e
-
   # Dependencies
   - name: libsecret
     buildsystem: meson
@@ -83,7 +73,6 @@ modules:
         FLUTTER_ROOT: /app/flutter
         PUB_CACHE: flatpak-pub-cache
     build-commands:
-      - git lfs install
       - rm -rf build
       - flutter config --no-analytics
       - flutter config --enable-linux-desktop
@@ -110,7 +99,6 @@ modules:
       - type: git
         url: https://gitlab.com/Openlyst/doudou.git
         tag: 5.0.0
-        commit: auto
 
   - name: desktop-integration
     buildsystem: simple
