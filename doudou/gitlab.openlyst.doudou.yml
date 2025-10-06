@@ -20,7 +20,7 @@ modules:
     buildsystem: simple
     build-commands:
       - mv download artifacts.zip
-      - unzip -q artifacts.zip -d build
+      - unzip -q artifacts.zip
       - install -Dm755 build/linux/x64/release/bundle/doudou /app/bin/doudou
       - install -d /app/lib/doudou
       - cp -a build/linux/x64/release/bundle/lib/* /app/lib/doudou/
