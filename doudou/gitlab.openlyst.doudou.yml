@@ -2,6 +2,8 @@ id: gitlab.openlyst.doudou
 runtime: org.freedesktop.Platform
 runtime-version: '24.08'
 sdk: org.freedesktop.Sdk
+base: io.mpv.Mpv
+base-version: stable
 command: doudou
 finish-args:
   - --share=network
@@ -16,27 +18,6 @@ finish-args:
   - --device=dri
 
 modules:
-  # Install libmpv for media playback
-  - name: libmpv
-    cleanup:
-      - /include
-      - /lib/pkgconfig
-      - /share/man
-    buildsystem: simple
-    build-commands:
-      - python3 waf configure --prefix=/app --enable-libmpv-shared --disable-cplayer --disable-build-date
-        --disable-alsa
-      - python3 waf build
-      - python3 waf install
-    sources:
-      - type: archive
-        url: https://github.com/mpv-player/mpv/archive/v0.38.0.tar.gz
-        sha256: 86d9ef40b6058732f67b46d0bbda24a074fae860b3eaae05bab3145041303066
-      - type: file
-        url: https://waf.io/waf-2.0.27
-        sha256: fe10e266c05063752d098787a7b934cd0d61092c8b072884f8a679c1c596dd6a
-        dest-filename: waf
-
   - name: doudou
     buildsystem: simple
     build-commands:
