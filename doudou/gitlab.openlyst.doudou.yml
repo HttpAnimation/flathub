@@ -25,6 +25,8 @@ modules:
       # Install the entire Flutter bundle to /app/lib/doudou preserving the structure
       - install -d /app/lib/doudou
       - cp -a build/linux/x64/release/bundle/* /app/lib/doudou/
+      # Copy libmpv from the SDK (it's available in the freedesktop runtime)
+      - cp -L /usr/lib/x86_64-linux-gnu/libmpv.so* /app/lib/doudou/lib/ 2>/dev/null || cp -L /usr/lib/libmpv.so* /app/lib/doudou/lib/ || true
       # Create wrapper script that runs from the correct directory
       - install -d /app/bin
       - |

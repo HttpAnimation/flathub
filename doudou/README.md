@@ -1,5 +1,24 @@
 # Doudou Flatpak Package - Build Instructions
 
+## Summary
+
+✅ **Successfully created:**
+- Flatpak manifest (`gitlab.openlyst.doudou.yml`)  
+- Desktop entry file (`gitlab.openlyst.doudou.desktop`)
+- AppStream metadata (`gitlab.openlyst.doudou.metainfo.xml`)
+
+✅ **Working features:**
+- Downloads and unpacks the GitLab CI artifacts correctly
+- Installs all Flutter bundle files in proper structure
+- Creates wrapper script to run from correct directory
+- Fixes Flutter AOT engine path issues
+- Desktop integration (icon, menu entry)
+- Proper permissions for Jellyfin connectivity
+
+⚠️ **Known issue:**
+- Media playback requires `libmpv` which needs to be added to the Flatpak build
+- App launches but media playback won't work until this is resolved
+
 ## Overview
 This repository contains the Flatpak packaging for Doudou v6.0.0, a beautiful Jellyfin music player built with Flutter.
 
@@ -35,25 +54,25 @@ AppData/AppStream metadata for software centers.
 
 ## Build Instructions
 
-### Prerequisites
-Doudou requires `libmpv` for media playback. Install it on your host system:
+### Prerequisites & Known Limitations
 
-**Debian/Ubuntu:**
-```bash
-sudo apt install libmpv-dev
+**Current Status:** This Flatpak currently requires `libmpv` to be available on the host system, but due to Flatpak sandboxing, it cannot access host libraries properly. 
+
+**For production/Flathub submission**, the manifest needs to be updated to either:
+1. Build libmpv as part of the Flatpak (recommended for Flathub)
+2. Use shared-modules for mpv
+3. Package libmpv dependencies within the bundle
+
+**Temporary workaround for local testing:**
+- The app will fail to initialize media playback
+- This doesn't prevent the app from launching, but media playback won't work
+
+**TODO for Flathub submission:**
+```yaml
+# Add to modules section:
+- name: libmpv
+  # ... build instructions from shared-modules/libmpv
 ```
-
-**Fedora:**
-```bash
-sudo dnf install mpv-libs-devel
-```
-
-**Arch:**
-```bash
-sudo pacman -S mpv
-```
-
-The Flatpak uses `--filesystem=host:ro` to access the system's libmpv library.
 
 ### Build the Flatpak
 ```bash
