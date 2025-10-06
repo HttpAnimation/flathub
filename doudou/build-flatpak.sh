@@ -34,9 +34,9 @@ set -x
 
 
 # No spaces in project name.
-projectName=FlutterApp
-projectId=com.example.FlutterApp
-executableName=flutter_flatpak_example
+projectName=doudou
+projectId=gitlab.openlyst.doudou
+executableName=doudou
 
 
 # ------------------------------- Build Flatpak ----------------------------- #
