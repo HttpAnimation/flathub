@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>gitlab.openlyst.doudou</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>Doudou</name>
+  <summary>Doudou Flutter Application</summary>
+  <description>
+    <p>
+      Doudou is a Flutter-based application that provides multimedia capabilities
+      with support for various media formats and playback features.
+    </p>
+  </description>
+  <launchable type="desktop-id">gitlab.openlyst.doudou.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Main application window</caption>
+    </screenshot>
+  </screenshots>
+  <url type="homepage">https://gitlab.com/openlyst/doudou</url>
+  <url type="bugtracker">https://gitlab.com/openlyst/doudou/-/issues</url>
+  <developer_name>Openlyst</developer_name>
+  <releases>
+    <release version="7.0.0" date="2025-10-06">
+      <description>
+        <p>Latest release of Doudou application</p>
+      </description>
+    </release>
+  </releases>
+  <content_rating type="oars-1.1" />
+</component>

@@ -1,0 +1,81 @@
+id: gitlab.openlyst.doudou
+runtime: org.freedesktop.Platform
+runtime-version: '24.08'
+sdk: org.freedesktop.Sdk
+command: doudou
+finish-args:
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --share=ipc
+  - --device=dri
+  - --socket=pulseaudio
+  - --share=network
+  - --filesystem=xdg-download
+  - --filesystem=xdg-documents
+  - --filesystem=xdg-music
+  - --filesystem=xdg-videos
+  - --filesystem=xdg-pictures
+  - --env=LD_LIBRARY_PATH=/app/lib:/app/lib/ffmpeg
+add-extensions:
+  org.freedesktop.Platform.ffmpeg-full:
+    directory: lib/ffmpeg
+    version: '24.08'
+    add-ld-path: .
+cleanup-commands:
+  - mkdir -p ${FLATPAK_DEST}/lib/ffmpeg
+modules:
+  - name: libass
+    config-opts:
+      - --disable-static
+    sources:
+      - type: archive
+        url: https://github.com/libass/libass/releases/download/0.17.3/libass-0.17.3.tar.gz
+        sha256: da7c348deb6fa6c24507afab2dee7545ba5dd5bbf90a137bfe9e738f7df68537
+    cleanup:
+      - /include
+      - /lib/pkgconfig
+
+  - name: libplacebo
+    buildsystem: meson
+    config-opts:
+      - -Dvulkan=disabled
+      - -Dshaderc=disabled
+      - -Dglslang=disabled
+    sources:
+      - type: git
+        url: https://github.com/haasn/libplacebo.git
+        tag: v7.349.0
+        commit: 1fd3c7bde7b943fe8985c893310b5269a09b46c5
+    cleanup:
+      - /include
+      - /lib/pkgconfig
+
+  - name: mpv
+    buildsystem: meson
+    config-opts:
+      - -Dlibmpv=true
+      - -Dcplayer=false
+      - -Dbuild-date=false
+    sources:
+      - type: archive
+        url: https://github.com/mpv-player/mpv/archive/v0.40.0.tar.gz
+        sha256: 10a0f4654f62140a6dd4d380dcf0bbdbdcf6e697556863dc499c296182f081a3
+    cleanup:
+      - /include
+      - /lib/pkgconfig
+      - /share/man
+  
+  - name: doudou
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 bin/doudou /app/bin/doudou
+      - cp -r bin/data /app/bin/
+      - cp -r bin/lib /app/bin/
+      - install -Dm644 gitlab.openlyst.doudou.appdata.xml /app/share/metainfo/gitlab.openlyst.doudou.appdata.xml
+      - install -Dm644 gitlab.openlyst.doudou.desktop /app/share/applications/gitlab.openlyst.doudou.desktop
+      - install -Dm644 gitlab.openlyst.doudou.png /app/share/icons/hicolor/128x128/apps/gitlab.openlyst.doudou.png
+      - install -Dm644 gitlab.openlyst.doudou-64.png /app/share/icons/hicolor/64x64/apps/gitlab.openlyst.doudou.png
+    sources:
+      - type: git
+        url: https://gitlab.com/Openlyst/doudou.git
+        commit: c392f5d1da3d5636b945b6d14637d80d1217476c
