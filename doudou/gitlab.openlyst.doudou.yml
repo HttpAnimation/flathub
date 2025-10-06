@@ -28,7 +28,7 @@ modules:
     sources:
       - type: archive
         url: https://github.com/git-lfs/git-lfs/releases/download/v3.5.1/git-lfs-linux-amd64-v3.5.1.tar.gz
-        sha256: 3b8c54e1b9a72f2c3a66cf327b992b2769d1628d34776d2ac8033792e0c25490
+        sha256: 6f28eb19faa7a968882dca190d92adc82493378b933958d67ceaeb9ebe4d731e
 
   # Dependencies
   - name: libsecret
