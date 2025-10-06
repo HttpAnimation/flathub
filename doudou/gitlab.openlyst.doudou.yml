@@ -25,6 +25,7 @@ modules:
       - install -d /app/lib/doudou
       - cp -a build/linux/x64/release/bundle/* /app/lib/doudou/
       # Create wrapper script that runs from the correct directory
+      - install -d /app/bin
       - |
         cat > /app/bin/doudou << 'EOF'
         #!/bin/sh
