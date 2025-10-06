@@ -2,8 +2,6 @@ id: gitlab.openlyst.doudou
 runtime: org.freedesktop.Platform
 runtime-version: '24.08'
 sdk: org.freedesktop.Sdk
-base: io.mpv.Mpv
-base-version: stable
 command: doudou
 finish-args:
   - --share=network
@@ -16,6 +14,7 @@ finish-args:
   - --talk-name=org.freedesktop.Notifications
   - --talk-name=org.freedesktop.secrets
   - --device=dri
+  - --filesystem=host:ro
 
 modules:
   - name: doudou
