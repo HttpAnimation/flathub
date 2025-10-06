@@ -21,17 +21,15 @@ modules:
     build-commands:
       - mv download artifacts.zip
       - unzip -q artifacts.zip
-      - install -Dm755 build/linux/x64/release/bundle/doudou /app/bin/doudou-bin
+      # Install the entire Flutter bundle to /app/lib/doudou preserving the structure
       - install -d /app/lib/doudou
-      - cp -a build/linux/x64/release/bundle/lib/* /app/lib/doudou/
-      - install -d /app/share/doudou
-      - cp -a build/linux/x64/release/bundle/data/* /app/share/doudou/
+      - cp -a build/linux/x64/release/bundle/* /app/lib/doudou/
+      # Create wrapper script that runs from the correct directory
       - |
         cat > /app/bin/doudou << 'EOF'
         #!/bin/sh
-        export LD_LIBRARY_PATH="/app/lib/doudou:$LD_LIBRARY_PATH"
-        export FLUTTER_DATA_DIR="/app/share/doudou"
-        exec /app/bin/doudou-bin "$@"
+        cd /app/lib/doudou
+        exec ./doudou "$@"
         EOF
       - chmod +x /app/bin/doudou
       - install -Dm644 gitlab.openlyst.doudou.desktop /app/share/applications/gitlab.openlyst.doudou.desktop
