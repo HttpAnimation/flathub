@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Doudou - Jellyfin Music Player
+    https://gitlab.com/Openlyst/doudou
+-->
+<component type="desktop-application">
+  <id>gitlab.openlyst.doudou</id>
+  <name>Doudou</name>
+  <summary>Beautiful music player for your personal Jellyfin media server</summary>
+  <developer_name>Openlyst</developer_name>
+  <url type="homepage">https://gitlab.com/Openlyst/doudou</url>
+  <url type="bugtracker">https://gitlab.com/Openlyst/doudou/-/issues</url>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+    <control>touch</control>
+  </supports>
+  <description>
+    <p>
+      A beautiful, privacy-focused music player for your personal Jellyfin media server. 
+      Enjoy your self-hosted music collection with a modern, intuitive interface built with Flutter.
+    </p>
+    <p>Features:</p>
+    <ul>
+      <li>Beautiful, clean interface inspired by modern music apps</li>
+      <li>Advanced audio features: crossfade, volume normalization, gapless playback</li>
+      <li>Queue management with drag-and-drop support</li>
+      <li>Smart preloading for seamless playback</li>
+      <li>Radio mode for endless music discovery</li>
+      <li>Offline downloads for listening without internet</li>
+      <li>Background playback with media controls</li>
+      <li>Zero data collection - complete privacy</li>
+      <li>Cross-platform support</li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">gitlab.openlyst.doudou.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Main player interface</caption>
+    </screenshot>
+  </screenshots>
+  <content_rating type="oars-1.1" />
+  <releases>
+    <release version="6.0.0" date="2025-10-06">
+      <description>
+        <p>Version 6.0.0 release</p>
+      </description>
+    </release>
+  </releases>
+</component>

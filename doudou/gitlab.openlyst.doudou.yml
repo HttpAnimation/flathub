@@ -1,36 +1,42 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/flatpak/flatpak-builder/main/data/flatpak-manifest.schema.json
-
----
-app-id: gitlab.openlyst.doudou
+id: gitlab.openlyst.doudou
 runtime: org.freedesktop.Platform
-runtime-version: "22.08"
+runtime-version: '24.08'
 sdk: org.freedesktop.Sdk
 command: doudou
-separate-locales: false
 finish-args:
-  - --share=ipc
-  - --socket=fallback-x11
-  - --socket=wayland
-  - --device=dri
-  - --socket=pulseaudio
   - --share=network
+  - --socket=wayland
+  - --socket=x11
+  - --share=ipc
+  - --socket=pulseaudio
+  - --filesystem=xdg-music:ro
+  - --filesystem=xdg-download
+  - --talk-name=org.freedesktop.Notifications
+  - --talk-name=org.freedesktop.secrets
+  - --device=dri
+
 modules:
-  # FlutterApp
   - name: doudou
     buildsystem: simple
-    only-arches:
-      - x86_64
     build-commands:
-      - "./build-flatpak.sh"
+      - mv download artifacts.zip
+      - unzip -q artifacts.zip -d build
+      - install -Dm755 build/linux/x64/release/bundle/doudou /app/bin/doudou
+      - install -d /app/lib/doudou
+      - cp -a build/linux/x64/release/bundle/lib/* /app/lib/doudou/
+      - install -d /app/share/doudou
+      - cp -a build/linux/x64/release/bundle/data/* /app/share/doudou/
+      - install -Dm644 gitlab.openlyst.doudou.desktop /app/share/applications/gitlab.openlyst.doudou.desktop
+      - install -Dm644 gitlab.openlyst.doudou.metainfo.xml /app/share/metainfo/gitlab.openlyst.doudou.metainfo.xml
+      - install -Dm644 gitlab.openlyst.doudou-64.png /app/share/icons/hicolor/64x64/apps/gitlab.openlyst.doudou.png
     sources:
       - type: file
         url: https://gitlab.com/Openlyst/doudou/-/jobs/artifacts/c392f5d1da3d5636b945b6d14637d80d1217476c/download?job=build_release_linux
-        # NOTE: Replace the sha256 below with the checksum of the downloaded artifact.
-        sha256: a1a8705cf12ed43e8d9868aa7b5e9d330932fca7443c8dd5a9264dcf9ed181e5
-      - type: dir
-        path: ../doudou
-      # - type: git
-      #   url: https://github.com/Merrit/flutter_flatpak_example.git
-      #   branch: main
+        sha256: dd90557598c012bf37930306849b52a12e7d401ba754df33f078807823211af1
+        dest-filename: download
       - type: file
-        path: build-flatpak.sh
+        path: gitlab.openlyst.doudou.desktop
+      - type: file
+        path: gitlab.openlyst.doudou.metainfo.xml
+      - type: file
+        path: gitlab.openlyst.doudou-64.png

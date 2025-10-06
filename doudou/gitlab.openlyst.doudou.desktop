@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=Doudou
+GenericName=Music Player
+Comment=Beautiful music player for your personal Jellyfin media server
+Icon=gitlab.openlyst.doudou
+Exec=doudou
+Terminal=false
+Categories=AudioVideo;Audio;Player;
+Keywords=music;audio;jellyfin;streaming;media;player;
+StartupNotify=true
+StartupWMClass=doudou
+MimeType=audio/mpeg;audio/x-vorbis+ogg;audio/x-flac;audio/mp4;
