@@ -6,28 +6,30 @@ command: doudou
 separate-locales: false
 
 finish-args:
-  # X11 + XShm access
   - --share=ipc
   - --socket=x11
-  # Wayland access
   - --socket=wayland
-  # Network access for potential online features
   - --share=network
-  # Sound access for white noise/audio playback
   - --socket=pulseaudio
-  # OpenGL rendering
   - --device=dri
-  # File system access for saving preferences/data
   - --filesystem=xdg-config/doudou:create
   - --filesystem=xdg-data/doudou:create
-  # D-Bus access
   - --socket=session-bus
   - --own-name=gitlab.openlyst.doudou
-  # Environment variables
   - --env=FLUTTER_VERSION=3.24.0
   - --env=DART_SDK=/app/flutter/bin/cache/dart-sdk
 
 modules:
+  # Git LFS support
+  - name: git-lfs
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 git-lfs /app/bin/git-lfs
+    sources:
+      - type: archive
+        url: https://github.com/git-lfs/git-lfs/releases/download/v3.5.1/git-lfs-linux-amd64-v3.5.1.tar.gz
+        sha256: 3b8c54e1b9a72f2c3a66cf327b992b2769d1628d34776d2ac8033792e0c25490
+
   # Dependencies
   - name: libsecret
     buildsystem: meson
@@ -77,41 +79,26 @@ modules:
     buildsystem: simple
     build-options:
       env:
-        # Set Flutter environment
         PATH: /app/flutter/bin:/usr/bin:/bin
         FLUTTER_ROOT: /app/flutter
         PUB_CACHE: flatpak-pub-cache
     build-commands:
-      # Clean any previous builds
+      - git lfs install
       - rm -rf build
-      
-      # Flutter setup and dependencies
       - flutter config --no-analytics
       - flutter config --enable-linux-desktop
       - flutter clean
       - flutter pub get
-      
-      # Build the Linux desktop app
       - flutter build linux --release --verbose
-      
-      # Install the application
       - cp -r build/linux/*/release/bundle/* /app/
-      
-      # Create desktop entry
       - install -Dm644 linux/gitlab.openlyst.doudou.desktop /app/share/applications/gitlab.openlyst.doudou.desktop
-      
-      # Install icon (assuming standard Flutter icon location)
       - |
         for size in 16 32 48 64 128 256 512; do
           install -Dm644 linux/icons/${size}x${size}.png /app/share/icons/hicolor/${size}x${size}/apps/gitlab.openlyst.doudou.png 2>/dev/null || \
           install -Dm644 assets/icon/icon.png /app/share/icons/hicolor/${size}x${size}/apps/gitlab.openlyst.doudou.png 2>/dev/null || \
           true
         done
-      
-      # Install metainfo
       - install -Dm644 linux/gitlab.openlyst.doudou.metainfo.xml /app/share/metainfo/gitlab.openlyst.doudou.metainfo.xml 2>/dev/null || true
-      
-      # Create wrapper script for the executable
       - |
         cat > /app/bin/doudou <<'EOF'
         #!/bin/sh
@@ -119,18 +106,12 @@ modules:
         exec /app/data/doudou "$@"
         EOF
       - chmod +x /app/bin/doudou
-      
     sources:
       - type: git
         url: https://gitlab.com/Openlyst/doudou.git
-        tag: v7.0.0
+        tag: 5.0.0
         commit: auto
-      # Alternative: use archive if tags are available
-      # - type: archive
-      #   url: https://gitlab.com/Openlyst/doudou/-/archive/v7.0.0/doudou-v7.0.0.tar.gz
-      #   sha256: YOUR_SHA256_HERE
 
-  # Desktop integration files (if not included in the source)
   - name: desktop-integration
     buildsystem: simple
     build-commands:
@@ -170,7 +151,7 @@ modules:
           <url type="bugtracker">https://gitlab.com/Openlyst/doudou/-/issues</url>
           <launchable type="desktop-id">gitlab.openlyst.doudou.desktop</launchable>
           <releases>
-            <release version="7.0.0" date="2024-01-01"/>
+            <release version="5.0.0" date="2024-01-01"/>
           </releases>
           <content_rating type="oars-1.1">
             <content_attribute id="violence-cartoon">none</content_attribute>
