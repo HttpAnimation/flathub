@@ -5,20 +5,36 @@ sdk: org.freedesktop.Sdk
 command: doudou
 
 finish-args:
-  - --share=ipc
+  # Audio (PipeWire systems use this via PulseAudio compatibility)
+  - --socket=pulseaudio
+
+  # Display
   - --socket=x11
   - --socket=wayland
-  - --socket=pulseaudio
+
+  # Shared memory for graphics/audio buffers
+  - --share=ipc
+
+  # Network access (for streaming, APIs, etc.)
   - --share=network
+
+  # GPU / hardware acceleration
   - --device=dri
-  - --device=all  # For hardware video decoding
+  - --device=all
+
+  # File system access
   - --filesystem=home
   - --filesystem=/media
   - --filesystem=/run/media
   - --filesystem=xdg-music:rw
   - --filesystem=xdg-videos:rw
   - --filesystem=xdg-download:rw
-  - --env=PULSE_RUNTIME_PATH=/run/user/1000/pulse
+
+  # Environment for bundled libs
+  - --env=LD_LIBRARY_PATH=/app/lib:/app/lib/ffmpeg
+  - --env=PATH=/app/bin:/usr/bin:/usr/libexec:$PATH
+  - --env=MPV_HOME=/app/share/mpv
+
 
 modules:
   # ----------------------------------------------------------------------------
