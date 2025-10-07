@@ -11,11 +11,31 @@ finish-args:
   - --socket=pulseaudio
   - --share=network
   - --device=dri
+  - --device=all  # For hardware video decoding
   - --filesystem=home
   - --filesystem=/media
   - --filesystem=/run/media
+  - --filesystem=xdg-music:rw
+  - --filesystem=xdg-videos:rw
+  - --filesystem=xdg-download:rw
+  - --env=PULSE_RUNTIME_PATH=/run/user/1000/pulse
 
 modules:
+  # ----------------------------------------------------------------------------
+  # Essential audio/video dependencies
+  # ----------------------------------------------------------------------------
+  - name: nv-codec-headers
+    cleanup:
+      - '*'
+    sources:
+      - type: git
+        url: https://git.videolan.org/git/ffmpeg/nv-codec-headers.git
+        tag: n12.1.14.0
+        commit: 1889e62e2d35ff7aa9baca2bceb14f053785e6f1
+    no-autogen: true
+    make-install-args:
+      - PREFIX=/app
+      
   # ----------------------------------------------------------------------------
   # libplacebo (required by mpv 0.40.0) - fetch with submodules so 3rdparty/glad is present
   # ----------------------------------------------------------------------------
@@ -42,9 +62,9 @@ modules:
     # autotools module will run autogen/configure automatically; no meson flags here
 
   # ----------------------------------------------------------------------------
-  # libmpv (mpv core library used by your app)
+  # mpv (both library and binary - your app might need the mpv command)
   # ----------------------------------------------------------------------------
-  - name: libmpv
+  - name: mpv
     buildsystem: meson
     sources:
       - type: archive
@@ -52,11 +72,16 @@ modules:
         sha256: 00fbe63728f7d06b351b2ab532db77ccdba0a49d45f88c456e7f54207457ef59
     config-opts:
       - -Dlibmpv=true
-      # DO NOT pass -Dlibass or -Dlibass=false — mpv's meson autodetects libass,
-      # and passing invalid -D keys causes the "Unknown options" error.
+      - -Dcplayer=true  # Build the mpv binary
+      - -Dmanpage-build=disabled
+      - -Dhtml-build=disabled
+      - -Dalsa=enabled
+      - -Dpulse=enabled
+    post-install:
+      - install -Dm644 /app/etc/mpv/encoding-profiles.conf /app/etc/mpv/encoding-profiles.conf || true
 
   # ----------------------------------------------------------------------------
-  # ffmpeg-extension placeholder directory (keeps your previous manifest intent)
+  # ffmpeg-extension directory for the FFmpeg extension
   # ----------------------------------------------------------------------------
   - name: ffmpeg-extension
     buildsystem: simple
@@ -85,7 +110,11 @@ modules:
       - type: script
         dest-filename: doudou
         commands:
-          - exec /app/lib/doudou/doudou "$@"
+          - '#!/bin/bash'
+          - 'export PATH="/app/bin:$PATH"'
+          - 'export LD_LIBRARY_PATH="/app/lib:/app/lib/ffmpeg:$LD_LIBRARY_PATH"'
+          - 'export MPV_HOME="/app/share/mpv"'
+          - 'exec /app/lib/doudou/doudou "$@"'
       - type: file
         path: gitlab.openlyst.doudou.desktop
       - type: file
@@ -98,4 +127,3 @@ add-extensions:
     directory: lib/ffmpeg
     version: '24.08'
     add-ld-path: .
-    no-autodownload: false
