@@ -79,8 +79,8 @@ modules:
       - install -Dm644 gitlab.openlyst.doudou.metainfo.xml /app/share/metainfo/gitlab.openlyst.doudou.metainfo.xml
     sources:
       - type: file
-        url: https://gitlab.com/Openlyst/doudou/-/jobs/artifacts/c392f5d1da3d5636b945b6d14637d80d1217476c/download?job=build_release_linux
-        sha256: 5ce7e80f8fd7d7a060ba445e78ebe037261abe80a60e0413f4f3cc411fbeff14
+        url: https://gitlab.com/Openlyst/doudou/-/jobs/artifacts/cc9539193c0b68e9ed28965a4d57eb2ab71c4efb/download?job=build_debug_linux
+        sha256: 013cc6f786e4e76a05e38a04352aacfe1f9960986eb83625c35a3b308a58fee6
         dest-filename: doudou-release.zip
       - type: script
         dest-filename: doudou
